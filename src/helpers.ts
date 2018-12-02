@@ -10,4 +10,35 @@ export default {
     clamp: (min: number, max: number, v: number): number => {
         return Math.min(Math.max(v, min), v);
     },
+    fadeOut: (scene: Phaser.Scene, cb: Function): void => {
+        const g = scene.add.graphics({
+            fillStyle: {
+                color: 0x000000
+            }
+        });
+        g.fillRect(0, 0, <number>scene.game.config.width, <number>scene.game.config.height);
+        g.alpha = 0;
+        g.depth = 10000;
+        scene.tweens.add({
+            targets: g,
+            alpha: 1,
+            duration: 1000,
+            onComplete: cb
+        });
+    },
+    fadeIn: (scene: Phaser.Scene, cb: Function): void => {
+        const g = scene.add.graphics({
+            fillStyle: {
+                color: 0x000000
+            }
+        });
+        g.fillRect(0, 0, <number>scene.game.config.width, <number>scene.game.config.height);
+        g.depth = 10000;
+        scene.tweens.add({
+            targets: g,
+            alpha: 0,
+            duration: 1000,
+            onComplete: cb
+        });
+    }
 }
