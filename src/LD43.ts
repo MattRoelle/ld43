@@ -1,5 +1,6 @@
 import ScaleManager from "./scaleManager";
 import { MainScene } from "./scenes/MainScene";
+import { TitleScene } from "./scenes/Titlescene";
 
 export class LD43 {
     private _game: Phaser.Game;
@@ -16,7 +17,10 @@ export class LD43 {
                 roundPixels: true,
                 transparent: false,
             },
-            scene: MainScene,
+            scene: [
+                TitleScene,
+                MainScene
+            ],
             physics: {
                 default: "matter",
                 matter: {

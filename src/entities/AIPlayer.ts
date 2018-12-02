@@ -4,6 +4,7 @@ import helpers from "../helpers";
 enum AIStates {
     Sleep = 0,
     BallChase = 1,
+    Defense = 2
 }
 
 export class AIPlayer extends Player {
@@ -13,6 +14,7 @@ export class AIPlayer extends Player {
     state: AIStates;
     changeTimeout: number;
     lastStateChangeT: number;
+    framesWithLowVel: number = 0;
 
     init(): void {
         this.setTexture("bplayer");
@@ -33,29 +35,51 @@ export class AIPlayer extends Player {
         const ballDistToTargetGoal = helpers.dist(this.ball, this.targetGoal);
 
         const targetGoalDx = this.ball.x - this.targetGoal.x;
+        const defGoalDx = this.x - this.myGoal.x;
+        const defGoalDy = this.y - this.myGoal.y;
+
+        if (Math.abs((<Matter.Body>this.body).velocity.x) < 1) this.framesWithLowVel++;
+        else this.framesWithLowVel = 0;
 
         switch(this.state) {
             case AIStates.Sleep:
                 if (!this.changeTimeout) {
                     this.changeTimeout = setTimeout(() => {
                         this.changeTimeout = null;
-                        this.state = AIStates.BallChase;
-                    }, 1500);
+                        this.switchState(AIStates.BallChase);
+                    }, 1000);
                 }
                 break;
             case AIStates.BallChase:
-                if (targetGoalDx < 0 && ballDx < 0)  {
-                    this.move(-1);
-                } else if (targetGoalDx > 0 && ballDx > 0) {
-                    this.move(1);
-                } else {
-                    if (ballDx < 0) this.move(-1);
-                    else this.move(1);
+
+                if (ballDy > 50) this.moveDown();
+
+                if (ballDistToTargetGoal > ballDistToMyGoal) {
+                    this.switchState(AIStates.Defense);
+                    return;
                 }
 
-                if (ballDy < -10) this.jump();
+                if (Math.abs(ballDx) < 10 && Math.abs(ballDy) < 10) {
+                    this.move(1);
+                } else {
+                    if (ballDx > 0) this.move(1);
+                    else this.move(-1);
+                    if (ballDy < -15) this.jump();
+                }
 
-                if (dt > 1500) this.switchState(AIStates.Sleep);
+                if (this.framesWithLowVel > 20) this.jump();
+
+                break;
+            case AIStates.Defense:
+                if (ballDistToTargetGoal < ballDistToMyGoal) {
+                    this.switchState(AIStates.BallChase);
+                    return;
+                }
+                if (defGoalDx > 0) this.move(-1);
+                else this.move(1);
+                if (defGoalDy < -15) this.jump();
+
+                if (this.framesWithLowVel > 20) this.jump();
                 break;
         }
     }

@@ -108,8 +108,8 @@ export class MainScene extends Phaser.Scene {
         this.rGoal = new Goal(this, 51, 131, "r");
         this.bGoal = new Goal(this, <number>this.game.config.width - 50, 131, "b");
 
-        this.rPlayer = new ControlledPlayer(this, 100, 100, this.ball, this.rGoal, this.bGoal);
-        this.bPlayer = new AIPlayer(this, 380, 100, this.ball, this.bGoal, this.rGoal);
+        this.rPlayer = new ControlledPlayer(this, 100, 140, this.ball, this.rGoal, this.bGoal);
+        this.bPlayer = new AIPlayer(this, 380, 140, this.ball, this.bGoal, this.rGoal);
 
         if (DEBUG) {
             this.debugText = this.add.text(100, 100, "100", {
@@ -165,6 +165,9 @@ export class MainScene extends Phaser.Scene {
 
         const deadPlayer = side == "r" ? this.rPlayer : this.bPlayer;
         const scoringPlayer = side == "r" ? this.bPlayer : this.rPlayer;
+
+        this.ball.setVisible(false);
+        this.ball.trailGfx.setVisible(false);
 
         if (side == "r") {
             this.rGoal.explode();

@@ -4,7 +4,7 @@ import { MainScene } from "../scenes/MainScene";
 export class Cloud extends Phaser.GameObjects.Sprite {
     speed: number;
 
-    constructor(scene: MainScene, x: number, y: number) {
+    constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, Math.random() < 0.3 ? "cloud2" : "cloud1", 0);
         this.scene = <Phaser.Scene>scene;
         this.scene.add.existing(this);

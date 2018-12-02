@@ -21,6 +21,7 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
                 color: 0xFFFFFF
             }
         });
+        this.trailGfx.blendMode = Phaser.BlendModes.ADD;
         this.scene = <Phaser.Scene>scene;
         this.scene.add.existing(this);
         this.setBody({
@@ -31,7 +32,7 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
         this.displayOriginX = 17;
         this.displayOriginY = 17;
         this.lastJumpT = -100;
-        this.setBounce(0.9);
+        this.setBounce(0.8);
         this.setFrictionAir(0);
         this.setFrictionStatic(0);
         this.init();
@@ -70,7 +71,9 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
         this.trailGfx.beginPath();
         this.trailGfx.lineStyle(10, 0xFFFFFF, 0.2);
         this.trailGfx.moveTo(firstPoint[0], firstPoint[1]);
-        for(let i = 1; i < this.trailPoints.length; i++) { const p = this.trailPoints[i]; this.trailGfx.lineTo(p[0], p[1]); 
+        for(let i = 1; i < this.trailPoints.length; i++) {
+            const p = this.trailPoints[i];
+            this.trailGfx.lineTo(p[0], p[1]); 
         }
         this.trailGfx.strokePath();
 
@@ -91,7 +94,7 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
 
     move(dx: number) {
         const v = this.mBody.velocity.x;
-        let speed = 0.13;
+        let speed = 0.11;
         if (Math.abs(v) < 2) speed *= 1.4;
         this.setVelocityX(v + (dx * speed));
     }
