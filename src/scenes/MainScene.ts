@@ -5,6 +5,7 @@ import { ControlledPlayer } from "../entities/ControlledPlayer";
 import { AIPlayer } from "../entities/AIPlayer";
 import { Goal } from "../entities/Goal";
 import { Ball } from "../entities/Ball";
+import { InputBtnManager } from "../InputBtnManager";
 
 const DEBUG = false;
 const SCORE_DIST = 17;
@@ -23,6 +24,7 @@ export class MainScene extends Phaser.Scene {
     state: GameStates = GameStates.Playing;
     debugText: Phaser.GameObjects.Text;
 
+    static nPlayers: number = 1;
     static rScore: number = 0;
     static bScore: number = 0;
     ball: Ball;
@@ -55,19 +57,29 @@ export class MainScene extends Phaser.Scene {
         this.load.image("rside", "/assets/export-rside.png");
         this.load.image("sun", "/assets/export-sun.png");
         this.load.image("ui", "/assets/export-ui.png");
+        this.load.image("redscore", "/assets/export-redscore.png");
+        this.load.image("bluescore", "/assets/export-bluescore.png");
 
         this.load.spritesheet("bgoalexpl", "/assets/export-bgoalexpl.png", {
             frameWidth: 70,
             frameHeight: 70,
             startFrame: 0,
             endFrame: 8,
-        })
+        });
+
         this.load.spritesheet("rgoalexpl", "/assets/export-rgoalexpl.png", {
             frameWidth: 70,
             frameHeight: 70,
             startFrame: 0,
             endFrame: 8,
-        })
+        });
+
+        this.load.spritesheet("stoplight", "/assets/stoplight.png", {
+            frameWidth: 111,
+            frameHeight: 205,
+            startFrame: 0,
+            endFrame: 15,
+        });
     }
 
     create() {
@@ -83,6 +95,13 @@ export class MainScene extends Phaser.Scene {
             frameRate: 15,
             repeat: 0,
             frames: this.anims.generateFrameNumbers("rgoalexpl", { start: 0, end: 8 })
+        });
+
+        this.anims.create({
+            key: "stoplight",
+            frameRate: 10,
+            repeat: 0,
+            frames: this.anims.generateFrameNumbers("stoplight", { start: 0, end: 15 })
         });
 
         this.state = GameStates.Playing;
@@ -103,13 +122,21 @@ export class MainScene extends Phaser.Scene {
 
         this.matter.world.setBounds();
 
-        this.ball = new Ball(this, <number>this.game.config.width/2, 100);
+        this.ball = new Ball(this, <number>this.game.config.width/2, 140);
 
         this.rGoal = new Goal(this, 51, 131, "r");
         this.bGoal = new Goal(this, <number>this.game.config.width - 50, 131, "b");
 
-        this.rPlayer = new ControlledPlayer(this, 100, 140, this.ball, this.rGoal, this.bGoal);
-        this.bPlayer = new AIPlayer(this, 380, 140, this.ball, this.bGoal, this.rGoal);
+
+        if (MainScene.nPlayers == 1) {
+            const inputMngr = new InputBtnManager(this, false);
+            this.rPlayer = new ControlledPlayer(this, 100, 140, this.ball, this.rGoal, this.bGoal, "r", inputMngr, 1);
+            this.bPlayer = new AIPlayer(this, 380, 140, this.ball, this.bGoal, this.rGoal, "b", inputMngr, 2);
+        } else {
+            const inputMngr = new InputBtnManager(this, true);
+            this.rPlayer = new ControlledPlayer(this, 100, 140, this.ball, this.rGoal, this.bGoal, "r", inputMngr, 1);
+            this.bPlayer = new ControlledPlayer(this, 380, 140, this.ball, this.bGoal, this.rGoal, "b", inputMngr, 2);
+        }
 
         if (DEBUG) {
             this.debugText = this.add.text(100, 100, "100", {
@@ -124,7 +151,7 @@ export class MainScene extends Phaser.Scene {
             align: "center"
         });
 
-        const rScoreText = this.add.text(<number>this.game.config.width - 53, 240, MainScene.rScore.toString(), {
+        const rScoreText = this.add.text(<number>this.game.config.width - 53, 240, MainScene.bScore.toString(), {
             fontSize: 18,
             align: "center"
         });
@@ -135,11 +162,31 @@ export class MainScene extends Phaser.Scene {
         this.bPlayer.setStatic(true);
         this.ball.setStatic(true);
         helpers.fadeIn(this, () => {
-            this.rPlayer.canMove = true;
-            this.bPlayer.canMove = true;
-            this.rPlayer.setStatic(false);
-            this.bPlayer.setStatic(false);
-            this.ball.setStatic(false);
+            const stoplight = this.add.sprite(<number>this.game.config.width/2, -300, "stoplight", 0);
+            stoplight.setOrigin(0.5, 0);
+
+            this.tweens.add({
+                targets: stoplight,
+                y: 0,
+                duration: 800,
+                ease: "Quad.easeOut",
+                onComplete: () => {
+                    stoplight.anims.play("stoplight");
+                    setTimeout(() => {
+                        this.tweens.add({
+                            targets: stoplight,
+                            y: -300,
+                            duration: 1000,
+                            ease: "Quad.easeOut"
+                        });
+                        this.rPlayer.canMove = true;
+                        this.bPlayer.canMove = true;
+                        this.rPlayer.setStatic(false);
+                        this.bPlayer.setStatic(false);
+                        this.ball.setStatic(false);
+                    }, 1800);
+                }
+            });
         });
 
         //this.goal("r");
@@ -169,14 +216,35 @@ export class MainScene extends Phaser.Scene {
         this.ball.setVisible(false);
         this.ball.trailGfx.setVisible(false);
 
+        let score: Phaser.GameObjects.Sprite;
         if (side == "r") {
             this.rGoal.explode();
             MainScene.bScore++;
+            score = this.add.sprite(<number>this.game.config.width/2, <number>this.game.config.height/2, "bluescore", 0);
         }
         if (side == "b") {
             this.bGoal.explode();
             MainScene.rScore++;
+            score = this.add.sprite(<number>this.game.config.width/2, <number>this.game.config.height/2, "redscore", 0);
         }
+
+        score.scaleX = 0;
+        score.scaleY = 0;
+        score.angle = 300;
+
+        this.tweens.add({
+            targets: score,
+            angle: 0,
+            scaleX: 0,
+            scaleY: 0,
+            ease: "Quad.easeOut",
+            duration: 500,
+            onComplete: () => {
+                setTimeout(() => {
+                    score.destroy();
+                }, 500);
+            }
+        })
 
         deadPlayer.canMove = false;
 

@@ -3,6 +3,7 @@ import { MainScene } from "../scenes/MainScene";
 import { Goal } from "./Goal";
 import { Ball } from "./Ball";
 import { BlendModes } from "phaser";
+import { InputBtnManager } from "../InputBtnManager";
 
 export abstract class Player extends Phaser.Physics.Matter.Sprite {
     lastJumpT: number;
@@ -12,8 +13,8 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
     trailPoints: number[][] = [];
     trailGfx: Phaser.GameObjects.Graphics;
 
-    constructor(scene: MainScene, x: number, y: number, public ball: Ball, public myGoal: Goal, public targetGoal: Goal) {
-        super(scene.matter.world, x, y, "rplayer", 0);
+    constructor(scene: MainScene, x: number, y: number, public ball: Ball, public myGoal: Goal, public targetGoal: Goal, color: string, public btns: InputBtnManager, public playerOrdinal: number) {
+        super(scene.matter.world, x, y, `${color}player`, 0);
         this.trailGfx = this.scene.add.graphics({
             lineStyle: {
                 width: 2,

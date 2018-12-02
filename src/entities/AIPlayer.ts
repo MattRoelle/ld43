@@ -47,14 +47,14 @@ export class AIPlayer extends Player {
                     this.changeTimeout = setTimeout(() => {
                         this.changeTimeout = null;
                         this.switchState(AIStates.BallChase);
-                    }, 1000);
+                    }, 500);
                 }
                 break;
             case AIStates.BallChase:
 
                 if (ballDy > 50) this.moveDown();
 
-                if (ballDistToTargetGoal > ballDistToMyGoal) {
+                if (ballDistToTargetGoal > ballDistToMyGoal && dt > 750) {
                     this.switchState(AIStates.Defense);
                     return;
                 }
@@ -71,7 +71,7 @@ export class AIPlayer extends Player {
 
                 break;
             case AIStates.Defense:
-                if (ballDistToTargetGoal < ballDistToMyGoal) {
+                if (ballDistToTargetGoal < ballDistToMyGoal || dt > 3500) {
                     this.switchState(AIStates.BallChase);
                     return;
                 }

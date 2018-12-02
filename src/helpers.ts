@@ -38,7 +38,10 @@ export default {
             targets: g,
             alpha: 0,
             duration: 1000,
-            onComplete: cb
+            onComplete: () => {
+                cb();
+                g.destroy();
+            }
         });
     }
 }

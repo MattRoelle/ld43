@@ -1,23 +1,21 @@
 import { Player } from "./Player";
 
 export class ControlledPlayer extends Player {
-    left: Phaser.Input.Keyboard.Key;
-    right: Phaser.Input.Keyboard.Key;
-    up: Phaser.Input.Keyboard.Key;
-    down: Phaser.Input.Keyboard.Key;
-
     init(): void {
-        this.left = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.right = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-        this.up = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.down = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
     }
 
     control(): void {
-        if (this.left.isDown) this.move(-1);
-        else if (this.right.isDown) this.move(1);
-        
-        if (this.up.isDown) this.jump();
-        if (this.down.isDown) this.moveDown();
+        // game jam hacks!
+        if (this.playerOrdinal == 1) {
+            if (this.btns.plyr1Right) this.move(1);
+            else if (this.btns.plyr1Left) this.move(-1);
+            if (this.btns.plyr1Up) this.jump();
+            if (this.btns.plyr1Down) this.moveDown();
+        } else {
+            if (this.btns.plyr2Right) this.move(1);
+            else if (this.btns.plyr2Left) this.move(-1);
+            if (this.btns.plyr2Up) this.jump();
+            if (this.btns.plyr2Down) this.moveDown();
+        }
     }
 }
