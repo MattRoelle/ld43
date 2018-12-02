@@ -3,10 +3,12 @@ import helpers from "../helpers";
 import { Cloud } from "../entities/Cloud";
 import { UIButton } from "../entities/UIButton";
 import { MainScene } from "./MainScene";
+import { SoundHelper } from "../SoundHelper";
 
 export class TutorialScene extends Phaser.Scene {
     exited: boolean = false;
     timeStarted: number;
+    soundHelper: SoundHelper;
 
     constructor() {
         super({
@@ -19,6 +21,8 @@ export class TutorialScene extends Phaser.Scene {
     }
 
     create() {
+        this.soundHelper = new SoundHelper(this);
+        this.soundHelper.playBgm();
         const tut = this.add.sprite(0, 0, "tutorial").setOrigin(0, 0);
         helpers.fadeIn(this, () => {});
         this.timeStarted = this.time.now;

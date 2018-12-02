@@ -166,6 +166,9 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
                                 gravityY: 400
                             });
 
+                            // hacks
+                            (<any>this.scene).soundHelper.playSfx("goalexp");
+
                             emitter0.explode(100, this.deathSprite.x, this.deathSprite.y);
 
                             setTimeout(() => {

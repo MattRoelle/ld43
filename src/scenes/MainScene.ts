@@ -7,6 +7,7 @@ import { Goal } from "../entities/Goal";
 import { Ball } from "../entities/Ball";
 import { InputBtnManager } from "../InputBtnManager";
 import { PostGameScene } from "./PostGameScene";
+import { SoundHelper } from "../SoundHelper";
 
 const DEBUG = false;
 const SCORE_DIST = 17;
@@ -29,6 +30,8 @@ export class MainScene extends Phaser.Scene {
     static rScore: number = 0;
     static bScore: number = 0;
     ball: Ball;
+    soundHelper: SoundHelper;
+    lastHitSfx: number;
 
     constructor() {
         super({
@@ -84,6 +87,9 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
+        this.soundHelper = new SoundHelper(this);
+        this.soundHelper.playBgm();
+
         this.anims.create({
             key: "bgoalexpl",
             frameRate: 15,
@@ -100,7 +106,7 @@ export class MainScene extends Phaser.Scene {
 
         this.anims.create({
             key: "stoplight",
-            frameRate: 10,
+            frameRate: 8,
             repeat: 0,
             frames: this.anims.generateFrameNumbers("stoplight", { start: 0, end: 15 })
         });
@@ -172,6 +178,9 @@ export class MainScene extends Phaser.Scene {
                 duration: 800,
                 ease: "Quad.easeOut",
                 onComplete: () => {
+                    setTimeout(() => {
+                        this.soundHelper.playSfx("stoplight");
+                    }, 100);
                     stoplight.anims.play("stoplight");
                     setTimeout(() => {
                         this.tweens.add({
@@ -185,12 +194,24 @@ export class MainScene extends Phaser.Scene {
                         this.rPlayer.setStatic(false);
                         this.bPlayer.setStatic(false);
                         this.ball.setStatic(false);
-                    }, 1800);
+                    }, 1500);
                 }
             });
         });
 
         //this.goal("r");
+
+        this.lastHitSfx = -1000;
+        this.matter.world.on("collisionstart", (ev: any) => {
+            if (this.state == GameStates.Ended) return;
+            if (this.time.now - this.lastHitSfx < 100) return;
+            for(let p of ev.pairs) {
+                if (p.bodyA.label == "Circle Body" && p.bodyB.label == "Circle Body") {
+                    this.lastHitSfx = this.time.now;
+                    this.soundHelper.playSfx("hit");
+                }
+            }
+        });
     }
 
     update() {
@@ -210,6 +231,11 @@ export class MainScene extends Phaser.Scene {
     goal(side: string) {
         if (this.state == GameStates.Ended) return;
         this.state = GameStates.Ended;
+
+        this.soundHelper.playSfx("goalexp");
+        setTimeout(() => {
+            this.soundHelper.playSfx("goal");
+        }, 300);
 
         const deadPlayer = side == "r" ? this.rPlayer : this.bPlayer;
         const scoringPlayer = side == "r" ? this.bPlayer : this.rPlayer;

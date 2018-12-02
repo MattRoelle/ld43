@@ -4,11 +4,13 @@ import { Cloud } from "../entities/Cloud";
 import { UIButton } from "../entities/UIButton";
 import { MainScene } from "./MainScene";
 import { PostGameScene } from "./PostGameScene";
+import { SoundHelper } from "../SoundHelper";
 
 export class TitleScene extends Phaser.Scene {
     clouds: Cloud[]
     shineGfx: Phaser.GameObjects.Graphics;
     exited: boolean = false;
+    soundHelper: SoundHelper;
 
     constructor() {
         super({
@@ -42,9 +44,21 @@ export class TitleScene extends Phaser.Scene {
         this.load.image("credits", "/assets/export-credits-text.png");
         this.load.image("button", "/assets/export-button.png");
         this.load.image("buttonactv", "/assets/export-buttonactv.png");
+
+        this.load.audio("theme", "/assets/sounds/theme.wav");
+        this.load.audio("hit1", "/assets/sounds/hit1.wav");
+        this.load.audio("hit2", "/assets/sounds/hit2.wav");
+        this.load.audio("goal", "/assets/sounds/goal.wav");
+        this.load.audio("goalexp", "/assets/sounds/goalexp.wav");
+        this.load.audio("stoplight", "/assets/sounds/stoplight.wav");
+        this.load.image("unmute", "/assets/export-unmute.png");
+        this.load.image("mute", "/assets/export-mute.png");
     }
 
     create() {
+        this.soundHelper = new SoundHelper(this);
+        this.soundHelper.playBgm();
+
         const bg = this.add.sprite(0, 0, "bg").setOrigin(0, 0);
 
 

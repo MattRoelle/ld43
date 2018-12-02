@@ -3,12 +3,14 @@ import helpers from "../helpers";
 import { Cloud } from "../entities/Cloud";
 import { UIButton } from "../entities/UIButton";
 import { MainScene } from "./MainScene";
+import { SoundHelper } from "../SoundHelper";
 
 export class PostGameScene extends Phaser.Scene {
     exited: boolean = false;
     timeStarted: number;
 
     static whoWon: string;
+    soundHelper: any;
 
     constructor() {
         super({
@@ -24,6 +26,9 @@ export class PostGameScene extends Phaser.Scene {
     }
 
     create() {
+        this.soundHelper = new SoundHelper(this);
+        this.soundHelper.playBgm();
+
         const bg = this.add.sprite(0, 0, "brickbg").setOrigin(0, 0);
         const postgame = this.add.sprite(<number>this.game.config.width/2, 10, "postgame").setOrigin(0.5, 0);
 

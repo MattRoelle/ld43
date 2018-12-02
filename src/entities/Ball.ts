@@ -20,7 +20,7 @@ export class Ball extends Phaser.Physics.Matter.Sprite {
             type: "circle",
             radius: 8
         }, {});
-        this.setBounce(1);
+        this.setBounce(1.04);
         this.setFrictionAir(0);
         this.setFrictionStatic(0);
         (<any>this).body.mass = 0.01;
