@@ -3,6 +3,7 @@ import helpers from "../helpers";
 import { Cloud } from "../entities/Cloud";
 import { UIButton } from "../entities/UIButton";
 import { MainScene } from "./MainScene";
+import { PostGameScene } from "./PostGameScene";
 
 export class TitleScene extends Phaser.Scene {
     clouds: Cloud[]

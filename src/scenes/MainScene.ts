@@ -6,6 +6,7 @@ import { AIPlayer } from "../entities/AIPlayer";
 import { Goal } from "../entities/Goal";
 import { Ball } from "../entities/Ball";
 import { InputBtnManager } from "../InputBtnManager";
+import { PostGameScene } from "./PostGameScene";
 
 const DEBUG = false;
 const SCORE_DIST = 17;
@@ -228,6 +229,7 @@ export class MainScene extends Phaser.Scene {
             score = this.add.sprite(<number>this.game.config.width/2, <number>this.game.config.height/2, "redscore", 0);
         }
 
+        score.depth = 2000;
         score.scaleX = 0;
         score.scaleY = 0;
         score.angle = 300;
@@ -235,14 +237,21 @@ export class MainScene extends Phaser.Scene {
         this.tweens.add({
             targets: score,
             angle: 0,
-            scaleX: 0,
-            scaleY: 0,
+            scaleX: 1,
+            scaleY: 1,
             ease: "Quad.easeOut",
             duration: 500,
+            delay: 250,
             onComplete: () => {
-                setTimeout(() => {
-                    score.destroy();
-                }, 500);
+                this.tweens.add({
+                    targets: score,
+                    alpha: 0,
+                    ease: "Power2.easeOut",
+                    duration: 500,
+                    onComplete: () => {
+                        score.destroy();
+                    }
+                })
             }
         })
 
@@ -250,9 +259,21 @@ export class MainScene extends Phaser.Scene {
 
         this.cameras.main.shake(300, 0.03);
         deadPlayer.die(() => {
-            helpers.fadeOut(this, () => {
-                this.scene.start("MainScene");
-            });
+            if (MainScene.bScore >= 3) {
+                helpers.fadeOut(this, () => {
+                    PostGameScene.whoWon = "b";
+                    this.scene.start("PostGameScene");
+                });
+            } else if (MainScene.rScore >= 3) {
+                helpers.fadeOut(this, () => {
+                    PostGameScene.whoWon = "r";
+                    this.scene.start("PostGameScene");
+                });
+            } else {
+                helpers.fadeOut(this, () => {
+                    this.scene.start("MainScene");
+                });
+            }
         });
     }
 }

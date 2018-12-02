@@ -22,7 +22,7 @@ export default {
         scene.tweens.add({
             targets: g,
             alpha: 1,
-            duration: 1000,
+            duration: 600,
             onComplete: cb
         });
     },
@@ -37,7 +37,7 @@ export default {
         scene.tweens.add({
             targets: g,
             alpha: 0,
-            duration: 1000,
+            duration: 600,
             onComplete: () => {
                 cb();
                 g.destroy();

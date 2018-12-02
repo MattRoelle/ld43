@@ -126,7 +126,7 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
             y: 130,
             angle: 720,
             ease: "Quad.easeInOut",
-            duration: 1000,
+            duration: 750,
             onComplete: () => {
 
                 this.scene.tweens.add({
@@ -150,7 +150,7 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
                         targets: beamSprite,
                         alpha: 0.3,
                         scaleX: 1,
-                        duration: 1250,
+                        duration: 750,
                         onComplete: () => {
                             this.deathSprite.setVisible(false);
 
@@ -184,7 +184,7 @@ export abstract class Player extends Phaser.Physics.Matter.Sprite {
             //y: this.deathSprite.y,
             zoom: 1.6,
             duration: 1000,
-            delay: 250,
+            delay: 750,
             ease: "Quad.easeInOut",
         });
 
