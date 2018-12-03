@@ -129,7 +129,7 @@ export class MainScene extends Phaser.Scene {
 
         this.matter.world.setBounds();
 
-        this.ball = new Ball(this, <number>this.game.config.width/2, 140);
+        this.ball = new Ball(this, <number>this.game.config.width/2, 155);
 
         this.rGoal = new Goal(this, 51, 131, "r");
         this.bGoal = new Goal(this, <number>this.game.config.width - 50, 131, "b");
