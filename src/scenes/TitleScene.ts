@@ -53,6 +53,11 @@ export class TitleScene extends Phaser.Scene {
         this.load.audio("stoplight", "/assets/sounds/stoplight.wav");
         this.load.image("unmute", "/assets/export-unmute.png");
         this.load.image("mute", "/assets/export-mute.png");
+
+        const loading = this.add.text(<number>this.game.config.width/2, <number>this.game.config.height/2, "Loading...", {
+            size: "100",
+            align: "center"
+        }).setOrigin(0.5, 0.5);
     }
 
     create() {
@@ -84,6 +89,10 @@ export class TitleScene extends Phaser.Scene {
 
         const credits = this.add.sprite(<number>this.game.config.width / 2, <number>this.game.config.height, "credits");
         credits.setOrigin(0.5, 1);
+        credits.setInteractive();
+        credits.on("pointerdown", () => {
+            window.open("https://twitter.com/mattyk1ns");
+        });
 
         helpers.fadeIn(this, () => { });
 

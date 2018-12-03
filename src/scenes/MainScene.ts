@@ -116,7 +116,7 @@ export class MainScene extends Phaser.Scene {
 
         this.clouds = [];
         for(let i = 0; i < 14; i++) {
-            this.clouds.push(new Cloud(this, -100 + (Math.random()*450), -10 + Math.random()*30));
+            this.clouds.push(new Cloud(this, -100 + (Math.random()*450), -10 + Math.random()*50));
         }
 
         const lside = this.add.sprite(0, <number>this.game.config.height, "lside").setOrigin(0, 1);
@@ -218,14 +218,16 @@ export class MainScene extends Phaser.Scene {
         this.rGoal.update();
         this.bGoal.update();
 
-        const bGoalDist = helpers.dist(this.bGoal, this.ball);
+        if (this.state != GameStates.Ended) {
+            const bGoalDist = helpers.dist(this.bGoal, this.ball);
 
-        if (DEBUG) {
-            this.debugText.text = bGoalDist.toString();
+            if (DEBUG) {
+                this.debugText.text = bGoalDist.toString();
+            }
+
+            if (helpers.dist(this.rGoal, this.ball) < SCORE_DIST) this.goal("r");
+            if (bGoalDist < SCORE_DIST) this.goal("b");
         }
-
-        if (helpers.dist(this.rGoal, this.ball) < SCORE_DIST) this.goal("r");
-        if (bGoalDist < SCORE_DIST) this.goal("b");
     }
 
     goal(side: string) {
